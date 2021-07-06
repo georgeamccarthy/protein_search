@@ -42,12 +42,3 @@ class ProtBertExecutor(Executor):
         :return: a `List` of proteins with "U,Z,O,B" replaced by "X".
         """
         return [re.sub(r"[UZOB]", "X", seq) for seq in sequences]
-
-
-# %%
-sequences = ["A E T C Z A O", "T E A B Z A O"]
-
-docs = DocumentArray((Document(content=seq) for seq in sequences))
-
-# %%
-embedded_docs = ProtBertExecutor().encode(docs)
