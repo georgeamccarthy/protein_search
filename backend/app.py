@@ -1,5 +1,6 @@
+from jina.types.document.generators import from_csv
+from jina import DocumentArray
 
-from helpers import da_from_csv
-
-proteins = da_from_csv('../data/Train_HHblits_1column.csv')
-print(proteins)
+proteins = DocumentArray(
+    from_csv(open("../data/Train_HHblits_1column.csv"), {"Sequences": "text"})
+)
