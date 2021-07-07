@@ -50,8 +50,9 @@ class ProtBertExecutor(Executor):
 # Simple indexer class and supporting functions.
 
 class MyIndexer(Executor):
+
     @requests(on='/index')
-    def fdjslka(self, docs, **kwargs):
+    def index(self, docs, **kwargs):
         print(docs)
 
 '''
