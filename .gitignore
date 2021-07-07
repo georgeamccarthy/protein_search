@@ -130,3 +130,6 @@ dmypy.json
 
 # Mac OS
 .DS_Store
+
+# Persistent data file
+data/proteins.json
