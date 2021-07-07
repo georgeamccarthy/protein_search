@@ -2,7 +2,7 @@
 import torch
 from transformers import BertModel, BertTokenizer
 import re
-from typing import Sequence, List
+from typing import Sequence, List, Dict, Tuple
 
 from jina import Executor, requests
 from jina import Document, DocumentArray
@@ -43,38 +43,45 @@ class ProtBertExecutor(Executor):
         """
         return [re.sub(r"[UZOB]", "X", seq) for seq in sequences]
 
-#==============================================================================
+
+# ==============================================================================
 # Code within this section copied from jina/helloworld/fashion/my_executors.py
 # Identical to jina/helloworld/chatbot/my_executors.py
 # Simple indexer class and supporting functions.
 
 class MyIndexer(Executor):
+    @requests(on='/index')
+    def fdjslka(self, docs, **kwargs):
+        print(docs)
+
+'''
+class MyIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
+        self._docs = DocumentArrayMemmap(self.workspace + "/indexer")
 
-    @requests(on='/index')
-    def index(self, docs: 'DocumentArray', **kwargs):
+    @requests(on="/index")
+    def index(self, docs: "DocumentArray", **kwargs):
         self._docs.extend(docs)
 
-    @requests(on=['/search', '/eval'])
-    def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
-        a = np.stack(docs.get_attributes('embedding'))
-        b = np.stack(self._docs.get_attributes('embedding'))
+    @requests(on=["/search", "/eval"])
+    def search(self, docs: "DocumentArray", parameters: Dict, **kwargs):
+        a = np.stack(docs.get_attributes("embedding"))
+        b = np.stack(self._docs.get_attributes("embedding"))
         q_emb = _ext_A(_norm(a))
         d_emb = _ext_B(_norm(b))
         dists = _cosine(q_emb, d_emb)
-        idx, dist = self._get_sorted_top_k(dists, int(parameters['top_k']))
+        idx, dist = self._get_sorted_top_k(dists, int(parameters["top_k"]))
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
-                d.scores['cosine'] = 1 - _dist
+                d.scores["cosine"] = 1 - _dist
                 _q.matches.append(d)
 
     @staticmethod
     def _get_sorted_top_k(
-        dist: 'np.array', top_k: int
-    ) -> Tuple['np.ndarray', 'np.ndarray']:
+        dist: "np.array", top_k: int
+    ) -> Tuple["np.ndarray", "np.ndarray"]:
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
             dist = np.take_along_axis(dist, idx, axis=1)
@@ -121,4 +128,6 @@ def _norm(A):
 def _cosine(A_norm_ext, B_norm_ext):
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
 
-#==============================================================================
+
+# ==============================================================================
+'''
