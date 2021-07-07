@@ -5,7 +5,7 @@ from my_executors import ProtBertExecutor, MyIndexer
 def main():
     proteins = DocumentArray(
         from_csv(
-            fp=open("../data/Train_HHblits_1column.csv"),
+            fp=open("../data/Train_HHblits_1column_short.csv"),
             field_resolver={"Protein sequences": "text"},
         )
     )
