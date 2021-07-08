@@ -18,7 +18,7 @@ def test_ProtBERT_encoding():
 def test_Indexer_indexing_samelength():
     proteins = DocumentArray(
         from_csv(
-            fp=open("../data/samelength.csv"),
+            fp=open("data/samelength.csv"),
             field_resolver={"Protein sequences": "text"},
         )
     )
