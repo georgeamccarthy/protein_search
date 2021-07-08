@@ -4,7 +4,7 @@ import sys
 sys.path.append("../")
 
 # %%
-from backend.my_executors import *
+from protein_search.backend.my_executors import *
 
 # %%
 def test_ProtBERT_encoding():
