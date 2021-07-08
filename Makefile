@@ -20,7 +20,7 @@ lint:  ## Lint
 	flake8 backend teasts
 
 test:  ## Run tests
-	python -m pytest -ra
+	pytest -ra
 
 build:
 	make format
