@@ -66,7 +66,7 @@ class MyIndexer(Executor):
     def save_path(self):
         if not os.path.exists(self.workspace):
             os.makedirs(self.workspace)
-        return os.path.join("../data/proteins.json")
+        return os.path.join("data/proteins.json")
 
     def save(self):
         self._docs.save(self.save_path)

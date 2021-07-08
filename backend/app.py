@@ -12,7 +12,7 @@ def main():
 
     flow = Flow().add(uses=ProtBertExecutor).add(uses=MyIndexer)
     with flow:
-        flow.post('/index', proteins, return_results=False)
+        flow.index(proteins)
         flow.close()
 
 if __name__ == "__main__":
