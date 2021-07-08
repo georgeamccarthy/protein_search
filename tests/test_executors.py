@@ -4,7 +4,7 @@ import sys
 sys.path.append("../")
 
 # %%
-from backend.my_executors import *
+from protein_search.backend.my_executors import *
 from jina import DocumentArray, Flow
 from jina.types.document.generators import from_csv
 
