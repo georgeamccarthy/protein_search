@@ -7,7 +7,6 @@ import os
 
 from jina import Executor, requests
 from jina import Document, DocumentArray
-from jina.types.arrays.memmap import DocumentArrayMemmap
 
 class ProtBertExecutor(Executor):
     """ProtBERT executor: https://huggingface.co/Rostlab/prot_bert"""
