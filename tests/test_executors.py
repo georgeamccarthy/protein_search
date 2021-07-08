@@ -5,6 +5,8 @@ sys.path.append("../")
 
 # %%
 from backend.my_executors import *
+from jina import DocumentArray, Flow
+from jina.types.document.generators import from_csv
 
 # %%
 def test_ProtBERT_encoding():
