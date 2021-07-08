@@ -5,16 +5,15 @@ from my_executors import ProtBertExecutor, MyIndexer
 def main():
     proteins = DocumentArray(
         from_csv(
-            #fp=open("../data/Train_HHblits_1column_short.csv"),
-            fp=open("../data/samelength.csv"),
+            fp=open("data/samelength.csv"),
             field_resolver={"Protein sequences": "text"},
         )
     )
 
-    flow = Flow(port_expose=12345).add(uses=ProtBertExecutor).add(uses=MyIndexer)
+    flow = Flow().add(uses=ProtBertExecutor).add(uses=MyIndexer)
     with flow:
-        flow.index(proteins)
-        flow.block()
+        flow.post('/index', proteins, return_results=False)
+        flow.close()
 
 if __name__ == "__main__":
     main()

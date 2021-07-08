@@ -15,6 +15,7 @@ def test_ProtBERT_encoding():
     embedded_docs = ProtBertExecutor().encode(docs)
 
 # %%
+'''
 def test_Indexer_indexing_samelength():
     proteins = DocumentArray(
         from_csv(
@@ -23,9 +24,11 @@ def test_Indexer_indexing_samelength():
         )
     )
 
-    flow = Flow(port_expose=12345).add(uses=ProtBertExecutor).add(uses=MyIndexer)
+    flow = Flow().add(uses=ProtBertExecutor).add(uses=MyIndexer)
     with flow:
-        flow.index(proteins)
+        flow.post('/index', proteins, return_results=False)
+        flow.close()
+'''
 
 if __name__ == "__main__":
     main()
