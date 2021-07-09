@@ -1,7 +1,7 @@
 ---
 name: Missing feature
 about: A missing essential feature for use in early development.
-title: ''
+title: "[MISSING FEATURE]"
 labels: missing feature
 assignees: ''
 
