@@ -1,12 +1,11 @@
 ### Pull Request Type
 
 Select the type of changes and add some context. After selecting, remove the rest of the types.
-
-1. 💔 **Breaking Changes** - does this PR break existing code? If so, in what way?
-2. 🏆 **Enhancements** - does this PR add a new feature or requirement?
-3. 📜 **Documentation** - does this PR add or contribute to the documentation
-4. 🐛 **Bug Fix** - does this PR fix a bug from an issue? If so, please mention the issue
-5. 🏠 **Internal** - something to do with GitHub meta information, or maybe refactored code
+- 💔 **Breaking Changes** - does this PR break existing code? If so, in what way?
+- 🏆 **Enhancements** - does this PR add a new feature or requirement?
+- 📜 **Documentation** - does this PR add or contribute to the documentation
+- 🐛 **Bug Fix** - does this PR fix a bug from an issue? If so, please mention the issue
+- 🏠 **Internal** - something to do with GitHub meta information, or maybe refactored code
 
 ### Purpose
 - This fixes handling of…
