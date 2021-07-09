@@ -1,5 +1,3 @@
-## (Pull Request Name Goes Here)
-
 ### Pull Request Type
 
 Select the type of changes and add some context. After selecting, remove the rest of the types.
