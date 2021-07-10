@@ -20,6 +20,8 @@ def encode_sequences(sequences):
 def test_ProtBERT_encoding():
     embedded_docs = encode_sequences(sequences)
 
-
-if __name__ == "__main__":
-    main()
+def test_Indexer_indexing_samelength():
+    embedded_docs = encode_sequences(sequences)
+    
+    # indexing
+    indexed_docs = MyIndexer().index(embedded_docs)
