@@ -1,12 +1,14 @@
 # %%
 import torch
-from transformers import BertModel, BertTokenizer
 import re
-from typing import Sequence, List, Dict, Tuple
 import os
 
-from jina import Executor, requests
-from jina import Document, DocumentArray
+from typing import Sequence, List
+from transformers import BertModel, BertTokenizer
+from jina import Executor, requests, DocumentArray
+
+from utils import partition
+
 
 class ProtBertExecutor(Executor):
     """ProtBERT executor: https://huggingface.co/Rostlab/prot_bert"""
@@ -23,9 +25,24 @@ class ProtBertExecutor(Executor):
         self.model = model
 
     @requests
-    def encode(self, docs: DocumentArray, **kwargs) -> DocumentArray:
+    def encode(
+        self, docs: DocumentArray, batch_size: int = 10000, **kwargs
+    ) -> DocumentArray:
+        batches = self.batchify(docs, batch_size)
+
+        for docs_batch in batches:
+            self.encode_batch(docs_batch)
+
+        return docs
+
+    def encode_batch(self, docs: DocumentArray, **kwargs) -> DocumentArray:
         sequences = self.preprocessing(docs.get_attributes("text"))
-        encoded_inputs = self.tokenizer(sequences, return_tensors="pt")
+        encoded_inputs = self.tokenizer(
+            sequences,
+            padding=True,
+            max_length=max(sequences, key=len),
+            return_tensors="pt",
+        )
 
         with torch.no_grad():
             outputs = self.model(**encoded_inputs)
@@ -34,6 +51,11 @@ class ProtBertExecutor(Executor):
                 doc.embedding = embed
 
         return docs
+
+    def batchify(self, docs: DocumentArray, batch_size: int) -> List[DocumentArray]:
+        docs.sort(key=lambda doc: len(doc.text))
+
+        return partition(docs, batch_size)
 
     def preprocessing(self, sequences: Sequence[str]) -> List[str]:
         """The rare amino acids "U,Z,O,B" are mapped to "X".
@@ -57,7 +79,7 @@ class MyIndexer(Executor):
             self._docs = DocumentArray()
 
     @requests(on="/index")
-    def index(self, docs: "DocumentArray", **kwargs):
+    def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
         self.save()
         return docs
