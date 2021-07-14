@@ -16,13 +16,13 @@ def main():
     print(f'Searching with protein sequence:\n{protein.text}')
 
     flow = (
-        Flow()
+        Flow(port_expose=12345, protocol='http')
         .add(uses=ProtBertExecutor)
         .add(uses=MyIndexer)
     )
     with flow:
         flow.index(proteins)
-        flow.post('/search', protein)
+        flow.block()
 
 
 if __name__ == "__main__":

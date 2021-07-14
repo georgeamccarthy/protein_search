@@ -86,6 +86,8 @@ class MyIndexer(Executor):
 
         self.save_results(results)
 
+        return results
+
     @staticmethod
     def _get_sorted_top_k(
         dist: "np.array", top_k: int
