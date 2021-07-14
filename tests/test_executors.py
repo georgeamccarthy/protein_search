@@ -8,7 +8,7 @@ sys.path.append("./backend/")
 from my_executors import *
 from jina import Document, DocumentArray
 
-sequences = ["A E T C Z A O", "T E A B Z A O"]
+sequences = ["AETCZAO", "TEABZAO"]
 
 def encode_sequences(sequences):
     docs = DocumentArray((Document(content=seq) for seq in sequences))

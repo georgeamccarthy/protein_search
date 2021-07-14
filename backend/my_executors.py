@@ -57,13 +57,20 @@ class ProtBertExecutor(Executor):
 
         return partition(docs, batch_size)
 
+    def format_sequence(self, seq: str):
+        # TODO: add some checks and format different cases?
+        seq = re.sub(r"[UZOB]", "X", seq)
+        seq = seq.replace("", " ").strip()
+
+        return seq
+
     def preprocessing(self, sequences: Sequence[str]) -> List[str]:
         """The rare amino acids "U,Z,O,B" are mapped to "X".
 
         :param sequences: a `Sequence` of proteins
         :return: a `List` of proteins with "U,Z,O,B" replaced by "X".
         """
-        return [re.sub(r"[UZOB]", "X", seq) for seq in sequences]
+        return [self.format_sequence(seq) for seq in sequences]
 
 
 class MyIndexer(Executor):
