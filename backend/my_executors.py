@@ -1,12 +1,14 @@
-# %%
 import torch
 from transformers import BertModel, BertTokenizer
 import re
 from typing import Sequence, List, Dict, Tuple
 import os
+import numpy as np
 
 from jina import Executor, requests
 from jina import Document, DocumentArray
+from backend_config import top_k, embeddings_path, results_path
+
 
 class ProtBertExecutor(Executor):
     """ProtBERT executor: https://huggingface.co/Rostlab/prot_bert"""
@@ -22,6 +24,7 @@ class ProtBertExecutor(Executor):
         self.tokenizer = tokenizer
         self.model = model
 
+    # All requests to ProtBertExecutor run encode()
     @requests
     def encode(self, docs: DocumentArray, **kwargs) -> DocumentArray:
         sequences = self.preprocessing(docs.get_attributes("text"))
@@ -50,40 +53,43 @@ class MyIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._docs = DocumentArray()
-        self.top_k = 10
         if os.path.exists(self.save_path):
             self._docs = DocumentArray.load(self.save_path)
         else:
             self._docs = DocumentArray()
 
-
     @requests(on="/index")
     def index(self, docs: "DocumentArray", **kwargs):
-        self._docs.extend(docs)
+        self._docs = docs
         self.save()
         return docs
 
-
     @requests(on="/search")
     def search(self, docs: "DocumentArray", **kwargs):
+        # Load proteins from csv.
+        proteins = DocumentArray.load(self.save_path)
+        results = DocumentArray()
+
         """Search method and called methods are as in the chatbot example"""
-        a = np.stack(docs.get_attributes('embedding'))
-        b = np.stack(self._docs.get_attributes('embedding'))
+        a = np.stack(docs.get_attributes("embedding"))
+        b = np.stack(proteins.get_attributes("embedding"))
         q_emb = _ext_A(_norm(a))
         d_emb = _ext_B(_norm(b))
         dists = _cosine(q_emb, d_emb)
-        idx, dist = self._get_sorted_top_k(dists, 1)
+        idx, dist = self._get_sorted_top_k(dists, top_k)
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
-                d.scores['cosine'] = 1 - _dist
+                d.scores["cosine"] = 1 - _dist
                 _q.matches.append(d)
+                results.append(d)
 
+        self.save_results(results)
 
     @staticmethod
     def _get_sorted_top_k(
-        dist: 'np.array', top_k: int
-    ) -> Tuple['np.ndarray', 'np.ndarray']:
+        dist: "np.array", top_k: int
+    ) -> Tuple["np.ndarray", "np.ndarray"]:
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
             dist = np.take_along_axis(dist, idx, axis=1)
@@ -96,16 +102,19 @@ class MyIndexer(Executor):
 
         return idx, dist
 
-
     @property
     def save_path(self):
         if not os.path.exists(self.workspace):
             os.makedirs(self.workspace)
-        return os.path.join("data/proteins.json")
 
+        return os.path.join(embeddings_path)
 
     def save(self):
         self._docs.save(self.save_path)
+
+    def save_results(self, results):
+        """Save search results in persistent file."""
+        results.save(results_path)
 
 
 def _get_ones(x, y):
@@ -140,4 +149,3 @@ def _norm(A):
 
 def _cosine(A_norm_ext, B_norm_ext):
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
-
