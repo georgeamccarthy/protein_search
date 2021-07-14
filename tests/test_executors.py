@@ -2,11 +2,11 @@
 import sys
 
 sys.path.append("../")
+sys.path.append("./backend/")
 
 # %%
-from protein_search.backend.my_executors import *
-from jina import DocumentArray, Flow
-from jina.types.document.generators import from_csv
+from my_executors import *
+from jina import Document, DocumentArray
 
 sequences = ["A E T C Z A O", "T E A B Z A O"]
 
@@ -19,7 +19,3 @@ def encode_sequences(sequences):
 
 def test_ProtBERT_encoding():
     embedded_docs = encode_sequences(sequences)
-
-
-if __name__ == "__main__":
-    main()

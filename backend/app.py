@@ -1,16 +1,29 @@
+# %%
 from jina.types.document.generators import from_csv
 from jina import DocumentArray, Flow
+
 from my_executors import ProtBertExecutor, MyIndexer
+from utils import load_or_download
+
+# %%
 
 def main():
-    proteins = DocumentArray(
-        from_csv(
-            fp=open("data/samelength.csv"),
-            field_resolver={"Protein sequences": "text"},
+    # TODO: load the following from config file
+    url = "http://www.lri.fr/owncloud/index.php/s/fxIqHWvg1Zsq0JW/download"
+    pdb_data_path = "../data/pdb_data_seq.csv"
+
+    with load_or_download(url, pdb_data_path) as data_file:
+        docs_generator = from_csv(
+            fp=data_file,
+            field_resolver={
+                "sequence": "text",
+                "structureId": "id"
+            }
         )
-    )
+        proteins = DocumentArray(docs_generator)
 
     flow = Flow().add(uses=ProtBertExecutor).add(uses=MyIndexer)
+
     with flow:
         flow.index(proteins)
         flow.close()
