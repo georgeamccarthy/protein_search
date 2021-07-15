@@ -6,6 +6,7 @@ Neural search through protein sequences using the ProtBert model and the Jina AI
 
 - ProtBert https://huggingface.co/Rostlab/prot_bert
 - Jina AI https://jina.ai
+- 3D protein models http://3dmol.org
 
 ## Setting up the environment
 
