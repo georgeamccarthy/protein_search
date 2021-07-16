@@ -1,13 +1,15 @@
+# %%
 import torch
-from transformers import BertModel, BertTokenizer
 import re
-from typing import Sequence, List, Dict, Tuple
 import os
 import numpy as np
 
-from jina import Executor, requests
-from jina import Document, DocumentArray
+from typing import Sequence, List, Tuple
+from transformers import BertModel, BertTokenizer
+from jina import Executor, requests, Document, DocumentArray
+
 from backend_config import top_k, embeddings_path, results_path
+from utils import partition
 
 
 class ProtBertExecutor(Executor):
@@ -26,9 +28,24 @@ class ProtBertExecutor(Executor):
 
     # All requests to ProtBertExecutor run encode()
     @requests
-    def encode(self, docs: DocumentArray, **kwargs) -> DocumentArray:
+    def encode(
+        self, docs: DocumentArray, batch_size: int = 10000, **kwargs
+    ) -> DocumentArray:
+        batches = self.batchify(docs, batch_size)
+
+        for docs_batch in batches:
+            self.encode_batch(docs_batch)
+
+        return docs
+
+    def encode_batch(self, docs: DocumentArray, **kwargs) -> DocumentArray:
         sequences = self.preprocessing(docs.get_attributes("text"))
-        encoded_inputs = self.tokenizer(sequences, return_tensors="pt")
+        encoded_inputs = self.tokenizer(
+            sequences,
+            padding=True,
+            max_length=max(sequences, key=len),
+            return_tensors="pt",
+        )
 
         with torch.no_grad():
             outputs = self.model(**encoded_inputs)
@@ -38,13 +55,26 @@ class ProtBertExecutor(Executor):
 
         return docs
 
+    def batchify(self, docs: DocumentArray, batch_size: int) -> List[DocumentArray]:
+        docs.sort(key=lambda doc: len(doc.text))
+
+        return partition(docs, batch_size)
+
+    def format_sequence(self, seq: str):
+        # TODO: add some checks and format different cases?
+        seq = seq.upper()
+        seq = re.sub(r"[UZOB]", "X", seq)
+        seq = seq.replace("", " ").strip()
+
+        return seq
+
     def preprocessing(self, sequences: Sequence[str]) -> List[str]:
         """The rare amino acids "U,Z,O,B" are mapped to "X".
 
         :param sequences: a `Sequence` of proteins
         :return: a `List` of proteins with "U,Z,O,B" replaced by "X".
         """
-        return [re.sub(r"[UZOB]", "X", seq) for seq in sequences]
+        return [self.format_sequence(seq) for seq in sequences]
 
 
 class MyIndexer(Executor):
@@ -59,15 +89,15 @@ class MyIndexer(Executor):
             self._docs = DocumentArray()
 
     @requests(on="/index")
-    def index(self, docs: "DocumentArray", **kwargs):
-        self._docs = docs
+    def index(self, docs: DocumentArray, **kwargs):
+        self._docs.extend(docs)
         self.save()
         return docs
 
     @requests(on="/search")
     def search(self, docs: "DocumentArray", **kwargs):
-        # Load proteins from csv.
-        proteins = DocumentArray.load(self.save_path)
+        # We preload `_docs` in the `__init__`. This might need changes for testing.
+        proteins = self._docs #DocumentArray.load(self.save_path)
         results = DocumentArray()
 
         """Search method and called methods are as in the chatbot example"""
@@ -106,10 +136,10 @@ class MyIndexer(Executor):
 
     @property
     def save_path(self):
-        if not os.path.exists(self.workspace):
-            os.makedirs(self.workspace)
+        directory = "".join(embeddings_path.split("/")[0:-1])
+        os.makedirs(directory, exist_ok=True)
 
-        return os.path.join(embeddings_path)
+        return embeddings_path
 
     def save(self):
         self._docs.save(self.save_path)

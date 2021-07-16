@@ -1,3 +1,4 @@
 jina
 torch
 transformers
+streamlit

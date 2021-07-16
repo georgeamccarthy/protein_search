@@ -1,27 +1,38 @@
+# %%
 from jina.types.document.generators import from_csv
 from jina import DocumentArray, Flow
-from my_executors import ProtBertExecutor, MyIndexer
-from backend_config import protein_path
-from random import randint
 
+from my_executors import ProtBertExecutor, MyIndexer
+from backend_config import protein_path, embeddings_path, dataset_url
+from utils import load_or_download
+
+import os
+
+# %%
 
 def main():
-    proteins = DocumentArray(
-        from_csv(
-            fp=open(protein_path),
-            field_resolver={"Protein sequences": "text"},
+    url = dataset_url
+    pdb_data_path = protein_path
+
+    with load_or_download(url, pdb_data_path) as data_file:
+        docs_generator = from_csv(
+            fp=data_file,
+            field_resolver={
+                "sequence": "text",
+                "structureId": "id"
+            }
         )
-    )
-    protein = proteins[randint(0, len(proteins)-1)]
-    print(f'Searching with protein sequence:\n{protein.text}')
+        proteins = DocumentArray(docs_generator)[0:42]
 
     flow = (
         Flow(port_expose=12345, protocol='http')
         .add(uses=ProtBertExecutor)
         .add(uses=MyIndexer)
     )
+
     with flow:
-        flow.index(proteins)
+        if not os.path.exists(embeddings_path):
+            flow.index(proteins)
         flow.block()
 
 

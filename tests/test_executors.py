@@ -2,13 +2,13 @@
 import sys
 
 sys.path.append("../")
+sys.path.append("./backend/")
 
 # %%
-from protein_search.backend.my_executors import *
-from jina import DocumentArray, Flow
-from jina.types.document.generators import from_csv
+from my_executors import *
+from jina import Document, DocumentArray
 
-sequences = ["A E T C Z A O", "T E A B Z A O"]
+sequences = ["AETCZAO", "TEABZAO"]
 
 def encode_sequences(sequences):
     docs = DocumentArray((Document(content=seq) for seq in sequences))
