@@ -96,7 +96,7 @@ class MyIndexer(Executor):
 
     @requests(on="/search")
     def search(self, docs: "DocumentArray", **kwargs):
-        # Load proteins from csv.
+        # We preload `_docs` in the `__init__`. This might need changes for testing.
         proteins = self._docs #DocumentArray.load(self.save_path)
         results = DocumentArray()
 

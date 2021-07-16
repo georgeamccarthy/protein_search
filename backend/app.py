@@ -3,7 +3,7 @@ from jina.types.document.generators import from_csv
 from jina import DocumentArray, Flow
 
 from my_executors import ProtBertExecutor, MyIndexer
-from backend_config import protein_path, embeddings_path
+from backend_config import protein_path, embeddings_path, dataset_url
 from utils import load_or_download
 
 import os
@@ -11,9 +11,8 @@ import os
 # %%
 
 def main():
-    # TODO: load the following from config file
-    url = "http://www.lri.fr/owncloud/index.php/s/fxIqHWvg1Zsq0JW/download"
-    pdb_data_path = protein_path #"../data/pdb_data_seq.csv"
+    url = dataset_url
+    pdb_data_path = protein_path
 
     with load_or_download(url, pdb_data_path) as data_file:
         docs_generator = from_csv(
