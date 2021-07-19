@@ -9,12 +9,12 @@ def get_data(query: str, endpoint: str) -> dict:
         "Content-Type": "application/json",
     }
 
-    data = '{"mode":"search","data":["' + query + '"]}'
+    data = '{"data":[{"text": "' + query + '"}]}'
 
     response = requests.post(endpoint, headers=headers, data=data)
     content = response.json()
 
-    matches = content["data"]["docs"][0]["matches"]
+    matches = content["data"]["docs"]
 
     return matches
 
