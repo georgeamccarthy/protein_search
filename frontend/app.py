@@ -66,3 +66,4 @@ if st.button(label="Search") or query:
                 )
     else:
         st.markdown("Please enter a query")
+
