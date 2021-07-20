@@ -8,7 +8,7 @@ from typing import Sequence, List, Tuple
 from transformers import BertModel, BertTokenizer
 from jina import Executor, requests, Document, DocumentArray
 
-from backend_config import top_k, embeddings_path, results_path
+from backend_config import top_k, embeddings_path, results_path, print_logs
 from utils import partition
 
 
@@ -31,15 +31,24 @@ class ProtBertExecutor(Executor):
     def encode(
         self, docs: DocumentArray, batch_size: int = 10000, **kwargs
     ) -> DocumentArray:
+        log('Indexing.')
+
+        log('Batchifying.')
         batches = self.batchify(docs, batch_size)
 
-        for docs_batch in batches:
+        for batch_num, docs_batch in enumerate(batches):
+            log(f'Encoding batch {batch_num+1}/{len(docs)}.')
             self.encode_batch(docs_batch)
 
+        log('Indexing completed.')
         return docs
 
     def encode_batch(self, docs: DocumentArray, **kwargs) -> DocumentArray:
+
+        log('Preprocessing.')
         sequences = self.preprocessing(docs.get_attributes("text"))
+
+        log('Tokenizing')
         encoded_inputs = self.tokenizer(
             sequences,
             padding=True,
@@ -48,9 +57,12 @@ class ProtBertExecutor(Executor):
         )
 
         with torch.no_grad():
+            log('Computing embeddings.')
             outputs = self.model(**encoded_inputs)
+            log('Getting last hidden state.')
             embeds = outputs.last_hidden_state[:, 0, :].detach().numpy()
             for doc, embed in zip(docs, embeds):
+                log(f'Getting embedding {doc.id}')
                 doc.embedding = embed
 
         return docs
@@ -181,3 +193,7 @@ def _norm(A):
 
 def _cosine(A_norm_ext, B_norm_ext):
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
+
+def log(message):
+    if print_logs:
+        print(message)
