@@ -25,3 +25,19 @@ test:  ## Run tests
 build:
 	make format
 	make coverage
+
+# For building the docker compose
+docker:
+	docker-compose -f docker-compose.yml up --build
+
+# For starting the docker comppose,
+up:
+	docker-compose -f docker-compose.yml up
+
+## For removing containers
+remove:
+	docker-compose down --remove-orphans
+
+# List all containers
+ps:
+	docker-compose ps -a
