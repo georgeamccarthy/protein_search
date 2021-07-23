@@ -133,3 +133,7 @@ dmypy.json
 
 # Persistent data file
 data/proteins.json
+
+# Custom - backend
+backend/embeddings/**/**
+backend/data/pdb_data_seq.csv
