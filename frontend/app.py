@@ -38,7 +38,7 @@ def protein_3d(pdb_id="1YCR", width=200, height=200):
         width=width,
     )
 
-endpoint = "http://localhost:12345/search"
+endpoint = "http://localhost:8020/search"
 
 st.title("Proteins Search")
 
