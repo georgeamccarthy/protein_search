@@ -26,5 +26,8 @@ COPY ./requirements.txt requirements.txt
 # Install dependencies
 RUN pip3 install -r requirements.txt
 
+# Expose port
+EXPOSE 8020
+
 # Run the application
 CMD [ "python", "src/app.py" ]
