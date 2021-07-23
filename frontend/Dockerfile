@@ -10,9 +10,6 @@ RUN useradd --create-home jina
 # Add the data folder locally to container
 COPY . .
 
-# Give read permissions for the data folder
-RUN chown jina data
-
 # Switch to user
 USER jina
 
@@ -25,6 +22,9 @@ COPY ./requirements.txt requirements.txt
 
 # Install dependencies
 RUN pip3 install -r requirements.txt
+
+# Expose Port
+EXPOSE 8501
 
 # Run the application
 CMD [ "streamlit", "run", "app.py" ]
