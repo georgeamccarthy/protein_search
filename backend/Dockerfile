@@ -8,7 +8,7 @@ WORKDIR /app/
 RUN useradd --create-home jina
 
 # Add the data folder locally to container
-COPY . .
+COPY ./data /app/data
 
 # Give read permissions for the data folder
 RUN chown jina data
@@ -20,11 +20,14 @@ USER jina
 ENV PYTHONPATH "${PYTHONPATH}:/home/jina/.local/bin"
 ENV PATH "${PATH}:/home/jina/.local/bin"
 
-# Add requirement contents
-COPY ./requirements.txt requirements.txt
+# Copy the requirements over to the container
+COPY ./requirements.txt /app/requirements.txt
 
-# Install dependencies
+# Install dependencies in the requirements
 RUN pip3 install -r requirements.txt
+
+# Add the src folder locally to container
+ADD ./src .
 
 # Expose port
 EXPOSE 8020
