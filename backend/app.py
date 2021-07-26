@@ -20,7 +20,7 @@ def main():
                 "structureId": "id"
             }
         )
-        proteins = DocumentArray(docs_generator)[0:42]
+        proteins = DocumentArray(docs_generator)[0:282]
 
     flow = (
         Flow(port_expose=12345, protocol='http')
