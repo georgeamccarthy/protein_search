@@ -1,4 +1,3 @@
-# %%
 from jina.types.document.generators import from_csv
 from jina import DocumentArray, Flow
 
@@ -8,7 +7,6 @@ from utils import load_or_download
 
 import os
 
-# %%
 
 def main():
     url = dataset_url

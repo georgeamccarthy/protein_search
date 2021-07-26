@@ -1,4 +1,3 @@
-# %%
 import os.path
 
 from urllib.request import urlretrieve
