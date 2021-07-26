@@ -1,4 +1,3 @@
-# %%
 import requests
 import streamlit as st
 import streamlit.components.v1 as components
@@ -40,18 +39,19 @@ def protein_3d(pdb_id="1YCR", width=200, height=200):
 
 endpoint = "http://localhost:12345/search"
 
-st.title("Proteins Search")
+st.title("protein_search")
 
 query = st.text_input(
-    label="Search proteins by aminoacids sequence e.g. `A E T C Z A O`"
+    label="Search proteins by aminoacids sequence e.g. `A E T C Z A O / AETCZAO`"
 )
 
 if st.button(label="Search") or query:
     if query:
         matches = get_data(query, endpoint)
         ids = [doc["id"] for doc in matches]
+        scores = [doc["scores"]["cosine"]["value"] for doc in matches]
 
-        for id in ids:
+        for id, score in zip(ids, scores):
             col1, col2 = st.beta_columns([1, 2])
             with col1:
                 protein_3d(pdb_id=id)
@@ -61,6 +61,7 @@ if st.button(label="Search") or query:
                 st.markdown(
                     f"""
                 PDB ID: {id}\n
+                Similarity metric: {score:.2f}\n
                 [Explore properties](https://www.rcsb.org/structure/{id})
               """,
                 )
