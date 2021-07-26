@@ -1,3 +1,4 @@
+### PR type
 - 💔 **Breaking Changes** - does this PR break existing code? If so, in what way?
 - 🏆 **Enhancements** - does this PR add a new feature or requirement?
 - 📜 **Documentation** - does this PR add or contribute to the documentation
