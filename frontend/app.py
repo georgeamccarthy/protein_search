@@ -135,6 +135,7 @@ query = st.text_input(
 if st.button(label="Search") or query:
     if query:
         matches = search(query, endpoint)
+        print(matches[0].keys())
         ids = [doc["id"] for doc in matches]
         scores = [doc["scores"]["cosine"]["value"] for doc in matches]
         metadata = pdb_metadata(ids)
