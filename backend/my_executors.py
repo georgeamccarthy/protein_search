@@ -37,7 +37,7 @@ class ProtBertExecutor(Executor):
         batches = self.batchify(docs, batch_size)
 
         for batch_num, docs_batch in enumerate(batches):
-            log(f'Encoding batch {batch_num+1}/{len(docs)}.')
+            log(f'Encoding batch {batch_num+1}/{np.ceil(len(docs)/batch_size):.0f}.')
             self.encode_batch(docs_batch)
 
         log('Indexing completed.')
