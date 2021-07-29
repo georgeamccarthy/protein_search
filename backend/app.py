@@ -37,7 +37,8 @@ def main():
     log('Opening flow.')
     with flow:
         log('Indexing.')
-        flow.index(proteins)
+        if not os.path.exists(embeddings_path):
+            flow.index(proteins)
         log('Ready.')
         flow.block()
 
