@@ -24,7 +24,7 @@ def main():
                 "structureId": "id"
             }
         )
-        proteins = DocumentArray(docs_generator)[:50]
+        proteins = DocumentArray(docs_generator)
 
     log('Creating flow.')
     flow = (
