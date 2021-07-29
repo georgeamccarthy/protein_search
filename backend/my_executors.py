@@ -7,8 +7,9 @@ from typing import Sequence, List, Tuple
 from transformers import BertModel, BertTokenizer
 from jina import Executor, requests, Document, DocumentArray
 
-from backend_config import top_k, embeddings_path, results_path, print_logs
+from backend_config import top_k, embeddings_path, results_path
 from utils import partition
+from helpers import log
 
 
 class ProtBertExecutor(Executor):
@@ -157,6 +158,8 @@ class MyIndexer(Executor):
 
     def save_results(self, results):
         """Save search results in persistent file."""
+        if not os.path.exists('results'):
+            os.mkdir('results')
         results.save(results_path)
 
 
@@ -193,6 +196,3 @@ def _norm(A):
 def _cosine(A_norm_ext, B_norm_ext):
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
 
-def log(message):
-    if print_logs:
-        print(message)
