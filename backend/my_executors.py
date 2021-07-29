@@ -94,16 +94,24 @@ class MyIndexer(Executor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArray()
+        if os.path.exists(embeddings_path):
+            self._docs = DocumentArray().load(embeddings_path)
+        else:
+            self._docs = DocumentArray()
+
+        log(f"Loaded {len(self._docs)} proteins.")
 
     @requests(on="/index")
     def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
+        log("Saving embeddings.")
         self.save()
         return docs
 
     @requests(on="/search")
     def search(self, docs: "DocumentArray", **kwargs):
+        log(f'Computing metric to {len(self._docs)} proteins.')
+
         docs.match(self._docs, metric='cosine', limit=top_k)
 
     def save(self):
