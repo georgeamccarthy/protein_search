@@ -8,7 +8,7 @@ dataset_url = "http://www.lri.fr/owncloud/index.php/s/fxIqHWvg1Zsq0JW/download"
 top_k = 10
 
 # Protein file path relative to root.
-protein_path = "data/pdb_data_seq.csv"
+protein_path = "data/pdb_data_seq_culled.csv"
 
 # Embeddings file path.
 embeddings_path = "embeddings/proteins.json"
