@@ -7,7 +7,7 @@ from typing import Sequence, List, Tuple
 from transformers import BertModel, BertTokenizer
 from jina import Executor, requests, Document, DocumentArray
 
-from backend_config import top_k, embeddings_path, results_path
+from backend_config import top_k, embeddings_path 
 from utils import partition
 from helpers import log
 
@@ -16,11 +16,14 @@ class ProtBertExecutor(Executor):
     """ProtBERT executor: https://huggingface.co/Rostlab/prot_bert"""
 
     def __init__(self, **kwargs):
+        log("Initialising ProtBertExecutor.")
         super().__init__()
 
+        log("Setting tokenizer.")
         tokenizer = BertTokenizer.from_pretrained(
             "Rostlab/prot_bert", do_lower_case=False
         )
+        log("Setting model.")
         model = BertModel.from_pretrained("Rostlab/prot_bert")
 
         self.tokenizer = tokenizer
@@ -31,7 +34,6 @@ class ProtBertExecutor(Executor):
     def encode(
         self, docs: DocumentArray, batch_size: int = 10000, **kwargs
     ) -> DocumentArray:
-        log('Indexing.')
 
         log('Batchifying.')
         batches = self.batchify(docs, batch_size)
@@ -90,16 +92,17 @@ class ProtBertExecutor(Executor):
 
 
 class MyIndexer(Executor):
-    """Indexer class"""
+    """Indexer Executor"""
 
     def __init__(self, **kwargs):
+        log("Initialising Indexer.")
         super().__init__(**kwargs)
         if os.path.exists(embeddings_path):
             self._docs = DocumentArray().load(embeddings_path)
         else:
             self._docs = DocumentArray()
 
-        log(f"Loaded {len(self._docs)} proteins.")
+        log(f"Loaded {len(self._docs)} proteins with embeddings.")
 
     @requests(on="/index")
     def index(self, docs: DocumentArray, **kwargs):
