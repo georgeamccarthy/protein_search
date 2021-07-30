@@ -16,7 +16,7 @@ def search(query: str, endpoint: str) -> dict:
     response = requests.post(endpoint, headers=headers, data=data)
     content = response.json()
 
-    matches = content["data"]["docs"]
+    matches = content["data"]["docs"][0]["matches"]
 
     return matches
 
@@ -135,6 +135,7 @@ query = st.text_input(
 if st.button(label="Search") or query:
     if query:
         matches = search(query, endpoint)
+
         ids = [doc["id"] for doc in matches]
         scores = [doc["scores"]["cosine"]["value"] for doc in matches]
         metadata = pdb_metadata(ids)
@@ -157,7 +158,7 @@ if st.button(label="Search") or query:
                     st.markdown(f"*Organisms:* {organisms}\n")
 
                 st.markdown(f"""
-                  Similarity metric: {score:.2f}\n
+                  Similarity metric: {score:.3f}\n
                   [Explore properties](https://www.rcsb.org/structure/{id})
                 """,
                 )

@@ -13,8 +13,5 @@ pdb_data_path = "data/pdb_data_seq.csv"
 # Embeddings file path.
 embeddings_path = "embeddings/proteins.json"
 
-# Search results path.
-results_path = "results/results.json"
-
 # Prints logs to command line if true.
 print_logs = True

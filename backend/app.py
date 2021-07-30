@@ -24,7 +24,8 @@ def main():
                 "structureId": "id"
             }
         )
-        proteins = DocumentArray(docs_generator)[:50]
+        proteins = DocumentArray(docs_generator)
+    log(f"Loaded {len(proteins)} proteins from {pdb_data_path}.")
 
     log('Creating flow.')
     flow = (
@@ -36,9 +37,10 @@ def main():
 
     log('Opening flow.')
     with flow:
-        log('Indexing.')
-        flow.index(proteins)
-        log('Ready.')
+        if not os.path.exists(embeddings_path):
+            log('Indexing.')
+            flow.index(proteins, request_size=len(proteins))
+        log('Ready for searching.')
         flow.block()
 
 
