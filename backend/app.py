@@ -39,7 +39,7 @@ def main():
     with flow:
         if not os.path.exists(embeddings_path):
             log('Indexing.')
-            flow.index(proteins, request_size=len(proteins))
+            flow.index(proteins, request_size=10)
         log('Ready for searching.')
         flow.block()
 
