@@ -136,4 +136,4 @@ data/proteins.json
 
 # Custom - backend
 backend/embeddings/**/**
-backend/data/pdb_data_seq.csv
+backend/data/
