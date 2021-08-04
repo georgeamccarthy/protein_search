@@ -8,42 +8,45 @@ from helpers import cull_duplicates, download_csv, log
 import os
 
 
-def main():
+def index():
     if not os.path.exists(pdb_data_path):
-        log('Downloading data.')
+        log("Downloading data.")
         download_csv(pdb_data_url, pdb_data_path)
-        log('Culling PDB ID duplicates.')
+        log("Culling PDB ID duplicates.")
         cull_duplicates(pdb_data_path)
 
-    log('Converting protein data to DocumentArray')
+    log("Converting protein data to DocumentArray")
     with open(pdb_data_path) as data_file:
         docs_generator = from_csv(
-            fp=data_file,
-            field_resolver={
-                "sequence": "text",
-                "structureId": "id"
-            }
+            fp=data_file, field_resolver={"sequence": "text", "structureId": "id"}
         )
         proteins = DocumentArray(docs_generator)
     log(f"Loaded {len(proteins)} proteins from {pdb_data_path}.")
 
-    log('Creating flow.')
+    log("Building index.")
+    indexer = Flow(protocol="grpc").add(uses=ProtBertExecutor).add(uses=MyIndexer)
+    with indexer:
+        indexer.index(proteins, request_size=10)
+
+
+def main():
+
+    if not os.path.exists(embeddings_path):
+        log("Embeddings not found.")
+        index()
+
+    log("Creating flow.")
     flow = (
-        Flow(port_expose=12345, protocol='http')
+        Flow(port_expose=12345, protocol="http")
         .add(uses=ProtBertExecutor)
         .add(uses=MyIndexer)
     )
 
-
-    log('Opening flow.')
+    log("Opening flow.")
     with flow:
-        if not os.path.exists(embeddings_path):
-            log('Indexing.')
-            flow.index(proteins, request_size=10)
-        log('Ready for searching.')
+        log("Ready for searching.")
         flow.block()
 
 
 if __name__ == "__main__":
     main()
-
