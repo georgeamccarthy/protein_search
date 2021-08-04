@@ -20,3 +20,6 @@
 
 ### References
 - This is **OPTIONAL**. Links that you've used when creating this PR.
+
+### Legal
+- [ ] I have read and agreed to [the terms of contributing.](https://github.com/georgeamccarthy/protein_search/blob/license/.github/contributing.md)
