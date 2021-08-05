@@ -32,9 +32,10 @@ def index():
 def main():
 
     if not os.path.exists(embeddings_path):
-        log("Embeddings not found.")
         index()
-
+    else:
+        log(f"Skipping index step because embeddings already computed {embeddings_path}.")
+       
     log("Creating flow.")
     flow = (
         Flow(port_expose=12345, protocol="http")
