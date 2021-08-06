@@ -135,5 +135,8 @@ dmypy.json
 data/proteins.json
 
 # Custom - backend
-backend/embeddings/**/**
+backend/embeddings/
 backend/data/
+backend/models/
+backend/tokenizers/
+backend/results
