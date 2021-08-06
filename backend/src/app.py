@@ -2,7 +2,7 @@
 from jina.types.document.generators import from_csv
 from jina import DocumentArray, Flow
 
-from my_executors import ProtBertExecutor, MyIndexer
+from executors import ProtBertExecutor, MyIndexer
 from backend_config import protein_path, embeddings_path, dataset_url
 from utils import load_or_download
 
