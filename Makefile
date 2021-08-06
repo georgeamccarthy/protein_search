@@ -14,10 +14,10 @@ testdeps:
 	pip install black coverage flake8 pytest
 
 format:
-	black backend tests
+	black backend frontend tests
 
 lint:  ## Lint
-	flake8 backend teasts
+	flake8 backend frontend tests
 
 test:  ## Run tests
 	pytest -ra
