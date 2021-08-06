@@ -7,9 +7,9 @@ import numpy as np
 from typing import Sequence, List, Tuple
 from transformers import BertModel, BertTokenizer
 from jina import Executor, requests, Document, DocumentArray
-
 from backend_config import top_k, embeddings_path, results_path, print_logs
-from utils import partition
+
+from utils import generate_path, partition
 
 
 class ProtBertExecutor(Executor):
@@ -18,37 +18,101 @@ class ProtBertExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
 
-        tokenizer = BertTokenizer.from_pretrained(
-            "Rostlab/prot_bert", do_lower_case=False
-        )
-        model = BertModel.from_pretrained("Rostlab/prot_bert")
+        # If the model is not already cached ...
+        if not os.path.isdir("./models/prot_bert"):
 
-        self.tokenizer = tokenizer
-        self.model = model
+            # First fetch from `https://huggingface.co/`
+
+            # # Log cache, file size info to user
+            print(
+                "[ProtBertExecutor.__init__] WARNING: Model cache not found - fetching"
+                "from https://huggingface.co/Rostlab/prot_bert (~1.68 GBs)"
+            )
+
+            # # Fetching the model
+            model = BertModel.from_pretrained("Rostlab/prot_bert")
+
+            # # Log success on complete fetch
+            print("[ProtBertExecutor.__init__] SUCCESS: Model fetch successfully")
+
+            # Saving to disk for cache mechanism
+
+            # # Saving model
+            model.save_pretrained("./models/prot_bert")
+
+            # # Log success on successful save
+            print(
+                "[ProtBertExecutor.__init__] SUCCESS: Model saved"
+                "successfully to local"
+            )
+
+        # If the tokenizer is not already cached
+        if not os.path.isdir("./tokenizers/prot_bert"):
+
+            # First fetch from `https://huggingface.co/`
+
+            # # Log cache, file size info to user
+            print(
+                "[ProtBertExecutor.__init__] WARNING: Tokenizer cache not found"
+                "- fetching from https://huggingface.co/Rostlab/prot_bert (~1 MBs)"
+            )
+
+            # # Fetching the tokenizer
+            tokenizer = BertTokenizer.from_pretrained(
+                "Rostlab/prot_bert", do_lower_case=False
+            )
+
+            # # Log success on complete fetch
+            print("[ProtBertExecutor.__init__] SUCCESS: Model fetch successfully")
+
+            # Saving to disk for cache mechanism
+
+            # # Saving model
+            tokenizer.save_pretrained("./tokenizers/prot_bert")
+
+            # # Log success on successful save
+            print(
+                "[ProtBertExecutor.__init__] SUCCESS: Tokenizer saved"
+                "successfully to local"
+            )
+
+        # Assign model from cache
+        self.model = BertModel.from_pretrained("./models/prot_bert")
+
+        # Success logging
+        print("[ProtBertExecutor.__init__] SUCCESS: Loaded model from cache")
+
+        # Assign tokenizer from cache
+        self.tokenizer = BertTokenizer.from_pretrained(
+            "./tokenizers/prot_bert", do_lower_case=False
+        )
+
+        # Success logging
+        print("[ProtBertExecutor.__init__] SUCCESS: Loaded tokenizer from cache")
 
     # All requests to ProtBertExecutor run encode()
     @requests
     def encode(
         self, docs: DocumentArray, batch_size: int = 10000, **kwargs
     ) -> DocumentArray:
-        log('Indexing.')
+        log("Indexing.")
 
-        log('Batchifying.')
+        log("Batchifying.")
         batches = self.batchify(docs, batch_size)
 
         for batch_num, docs_batch in enumerate(batches):
-            log(f'Encoding batch {batch_num+1}/{len(docs)}.')
+            log(f"Encoding batch {batch_num+1}/{len(docs)}.")
             self.encode_batch(docs_batch)
 
-        log('Indexing completed.')
+        log("Indexing completed.")
         return docs
 
     def encode_batch(self, docs: DocumentArray, **kwargs) -> DocumentArray:
 
-        log('Preprocessing.')
+        log("Preprocessing.")
         sequences = self.preprocessing(docs.get_attributes("text"))
 
-        log('Tokenizing')
+        log("Tokenizing")
         encoded_inputs = self.tokenizer(
             sequences,
             padding=True,
@@ -57,12 +121,12 @@ class ProtBertExecutor(Executor):
         )
 
         with torch.no_grad():
-            log('Computing embeddings.')
+            log("Computing embeddings.")
             outputs = self.model(**encoded_inputs)
-            log('Getting last hidden state.')
+            log("Getting last hidden state.")
             embeds = outputs.last_hidden_state[:, 0, :].detach().numpy()
             for doc, embed in zip(docs, embeds):
-                log(f'Getting embedding {doc.id}')
+                log(f"Getting embedding {doc.id}")
                 doc.embedding = embed
 
         return docs
@@ -109,7 +173,7 @@ class MyIndexer(Executor):
     @requests(on="/search")
     def search(self, docs: "DocumentArray", **kwargs):
         # We preload `_docs` in the `__init__`. This might need changes for testing.
-        proteins = self._docs #DocumentArray.load(self.save_path)
+        proteins = self._docs  # DocumentArray.load(self.save_path)
         results = DocumentArray()
 
         """Search method and called methods are as in the chatbot example"""
@@ -158,6 +222,10 @@ class MyIndexer(Executor):
 
     def save_results(self, results):
         """Save search results in persistent file."""
+
+        if not os.path.exists(results_path):
+            generate_path(results_path)
+
         results.save(results_path)
 
 
@@ -193,6 +261,7 @@ def _norm(A):
 
 def _cosine(A_norm_ext, B_norm_ext):
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
+
 
 def log(message):
     if print_logs:

@@ -10,22 +10,19 @@ import os
 
 # %%
 
+
 def main():
     url = dataset_url
     pdb_data_path = protein_path
 
     with load_or_download(url, pdb_data_path) as data_file:
         docs_generator = from_csv(
-            fp=data_file,
-            field_resolver={
-                "sequence": "text",
-                "structureId": "id"
-            }
+            fp=data_file, field_resolver={"sequence": "text", "structureId": "id"}
         )
         proteins = DocumentArray(docs_generator)[0:42]
 
     flow = (
-        Flow(port_expose=8020, protocol='http')
+        Flow(port_expose=8020, protocol="http")
         .add(uses=ProtBertExecutor)
         .add(uses=MyIndexer)
     )
@@ -38,4 +35,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
