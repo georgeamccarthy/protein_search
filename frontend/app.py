@@ -1,22 +1,20 @@
-# %%
 import requests
 import streamlit as st
 import streamlit.components.v1 as components
 
 
 def get_data(query: str, endpoint: str) -> dict:
-    headers = {
-        "Content-Type": "application/json",
-    }
 
-    data = '{"data":[{"text": "' + query + '"}]}'
+    content = requests.post(
+        endpoint,
+        headers={
+            "Content-Type": "application/json",
+        },
+        data=f'{{"data":[{{"text": "{query}"}}]}}',
+    ).json()
 
-    response = requests.post(endpoint, headers=headers, data=data)
-    content = response.json()
+    return content["data"]["docs"]
 
-    matches = content["data"]["docs"]
-
-    return matches
 
 def protein_3d(pdb_id="1YCR", width=200, height=200):
     components.html(
@@ -37,6 +35,7 @@ def protein_3d(pdb_id="1YCR", width=200, height=200):
         height=height,
         width=width,
     )
+
 
 endpoint = "http://localhost:8020/search"
 
@@ -66,4 +65,3 @@ if st.button(label="Search") or query:
                 )
     else:
         st.markdown("Please enter a query")
-

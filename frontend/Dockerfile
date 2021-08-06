@@ -1,5 +1,5 @@
 # Get image for Python
-FROM python:3.8-slim-buster
+FROM python:3.8
 
 # Set working directory
 WORKDIR /app/
