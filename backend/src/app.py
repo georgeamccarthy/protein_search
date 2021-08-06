@@ -1,7 +1,7 @@
 from jina.types.document.generators import from_csv
 from jina import DocumentArray, Flow
 
-from my_executors import ProtBertExecutor, MyIndexer
+from executors import ProtBertExecutor, MyIndexer
 from backend_config import pdb_data_path, embeddings_path, pdb_data_url
 from helpers import cull_duplicates, download_csv, log
 
@@ -36,9 +36,11 @@ def main():
     else:
         log(f"Skipping index step because embeddings already computed {embeddings_path}.")
        
+    ProtBertExecutor.initialize_executor()
+
     log("Creating flow.")
     flow = (
-        Flow(port_expose=12345, protocol="http")
+        Flow(port_expose=8020, protocol="http")
         .add(uses=ProtBertExecutor)
         .add(uses=MyIndexer)
     )

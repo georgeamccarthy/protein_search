@@ -7,14 +7,13 @@ from typing import List, Dict
 
 
 def search(query: str, endpoint: str) -> dict:
-    headers = {
-        "Content-Type": "application/json",
-    }
-
-    data = '{"data":[{"text": "' + query + '"}]}'
-
-    response = requests.post(endpoint, headers=headers, data=data)
-    content = response.json()
+    content = requests.post(
+        endpoint,
+        headers={
+            "Content-Type": "application/json",
+        },
+        data=f'{{"data":[{{"text": "{query}"}}]}}',
+    ).json()
 
     matches = content["data"]["docs"][0]["matches"]
 
@@ -124,7 +123,7 @@ def protein_3d(pdb_id="1YCR", width=200, height=200):
     )
 
 
-endpoint = "http://localhost:12345/search"
+endpoint = "http://backend:8020/search"
 
 st.title("protein_search")
 

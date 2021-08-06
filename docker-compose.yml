@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+
+  backend:
+    image: rubix982/jina-backend:v1.0.0    
+    container_name: protein-search-backend
+    build:
+      context: ./backend
+    stdin_open: true      
+    restart: always
+    volumes: 
+        - "./backend:/app"
+        - "./backend/models:/app/models"
+        - "./backend/tokenizers:/app/tokenizers"
+    ports:
+      - "8020:8020"
+
+  frontend:
+    image: rubix982/jina-frontend:v1.0.0
+    container_name: protein-search-frontend
+    build: 
+      context: ./frontend
+    stdin_open: true
+    restart: always
+    volumes: 
+      - "./frontend:/app"
+      - "./frontend/requirements.txt:/app/requirements.txt"    
+    ports:
+      - "8501:8501"
+    depends_on:
+      - "backend"
