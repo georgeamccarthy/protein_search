@@ -40,7 +40,7 @@ Some notes before you use this route,
 2. The `torch` dependency in `backend/requirements.txt` is 831.1 MBs large at the time of writing. Unless you get red colored logs, everything is fine and just taking time to be installed for `torch`
 3. This project uses the `Rostbert/prot_bert` pre-trained model from `HuggingFace` which is 1.68 GBs in size.
 
-The great news is that you will only need to install these dependencies and build the images only once. Docker will cache all of the layers and steps, and caching for the pre-trained model has been integrated.
+The great news is that you will need to install these dependencies and build the images only once. Docker will cache all of the layers and steps, and caching for the pre-trained model has been integrated.
 
 Some more functionalites provided are,
 
