@@ -15,8 +15,18 @@ from utils import generate_path, partition
 class ProtBertExecutor(Executor):
     """ProtBERT executor: https://huggingface.co/Rostlab/prot_bert"""
 
+    __model = None
+
+    __tokenizer = None
+
     def __init__(self, **kwargs):
         super().__init__()
+
+        self.model = ProtBertExecutor.__model
+        self.tokenizer = ProtBertExecutor.__tokenizer
+
+    @staticmethod
+    def initialize_executor():
 
         # If the model is not already cached ...
         if not os.path.isdir("./models/prot_bert"):
@@ -25,7 +35,7 @@ class ProtBertExecutor(Executor):
 
             # # Log cache, file size info to user
             print(
-                "[ProtBertExecutor.__init__] WARNING: Model cache not found - fetching"
+                "[ProtBertExecutor.initialize_executor] WARNING: Model cache not found - fetching "
                 "from https://huggingface.co/Rostlab/prot_bert (~1.68 GBs)"
             )
 
@@ -33,7 +43,7 @@ class ProtBertExecutor(Executor):
             model = BertModel.from_pretrained("Rostlab/prot_bert")
 
             # # Log success on complete fetch
-            print("[ProtBertExecutor.__init__] SUCCESS: Model fetch successfully")
+            print("[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully")
 
             # Saving to disk for cache mechanism
 
@@ -42,7 +52,7 @@ class ProtBertExecutor(Executor):
 
             # # Log success on successful save
             print(
-                "[ProtBertExecutor.__init__] SUCCESS: Model saved"
+                "[ProtBertExecutor.initialize_executor] SUCCESS: Model saved "
                 "successfully to local"
             )
 
@@ -53,7 +63,7 @@ class ProtBertExecutor(Executor):
 
             # # Log cache, file size info to user
             print(
-                "[ProtBertExecutor.__init__] WARNING: Tokenizer cache not found"
+                "[ProtBertExecutor.initialize_executor] WARNING: Tokenizer cache not found "
                 "- fetching from https://huggingface.co/Rostlab/prot_bert (~1 MBs)"
             )
 
@@ -63,7 +73,7 @@ class ProtBertExecutor(Executor):
             )
 
             # # Log success on complete fetch
-            print("[ProtBertExecutor.__init__] SUCCESS: Model fetch successfully")
+            print("[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully")
 
             # Saving to disk for cache mechanism
 
@@ -72,23 +82,23 @@ class ProtBertExecutor(Executor):
 
             # # Log success on successful save
             print(
-                "[ProtBertExecutor.__init__] SUCCESS: Tokenizer saved"
+                "[ProtBertExecutor.initialize_executor] SUCCESS: Tokenizer saved "
                 "successfully to local"
             )
 
         # Assign model from cache
-        self.model = BertModel.from_pretrained("./models/prot_bert")
+        ProtBertExecutor.__model = BertModel.from_pretrained("./models/prot_bert")
 
         # Success logging
-        print("[ProtBertExecutor.__init__] SUCCESS: Loaded model from cache")
+        print("[ProtBertExecutor.initialize_executor] SUCCESS: Loaded model from cache")
 
         # Assign tokenizer from cache
-        self.tokenizer = BertTokenizer.from_pretrained(
+        ProtBertExecutor.__tokenizer = BertTokenizer.from_pretrained(
             "./tokenizers/prot_bert", do_lower_case=False
         )
 
         # Success logging
-        print("[ProtBertExecutor.__init__] SUCCESS: Loaded tokenizer from cache")
+        print("[ProtBertExecutor.initialize_executor] SUCCESS: Loaded tokenizer from cache")
 
     # All requests to ProtBertExecutor run encode()
     @requests

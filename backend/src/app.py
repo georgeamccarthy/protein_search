@@ -21,6 +21,8 @@ def main():
         )
         proteins = DocumentArray(docs_generator)[0:42]
 
+    ProtBertExecutor.initialize_executor()
+
     flow = (
         Flow(port_expose=8020, protocol="http")
         .add(uses=ProtBertExecutor)
