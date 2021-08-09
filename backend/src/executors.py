@@ -7,7 +7,7 @@ from typing import Sequence, List, Tuple
 from transformers import BertModel, BertTokenizer
 from jina import Executor, requests, Document, DocumentArray
 
-from backend_config import top_k, embeddings_path, results_path
+from backend_config import top_k, embeddings_path
 from utils import generate_path, partition
 from helpers import log
 
