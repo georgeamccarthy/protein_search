@@ -23,6 +23,9 @@ class ProtBertExecutor(Executor):
         log("Initialising ProtBertExecutor.")
         super().__init__()
 
+        if ProtBertExecutor.__model is None or ProtBertExecutor.__tokenizer is None:
+            ProtBertExecutor.initialize_executor()
+
         self.model = ProtBertExecutor.__model
         self.tokenizer = ProtBertExecutor.__tokenizer
 
@@ -44,7 +47,9 @@ class ProtBertExecutor(Executor):
             model = BertModel.from_pretrained("Rostlab/prot_bert")
 
             # # Log success on complete fetch
-            print("[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully")
+            print(
+                "[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully"
+            )
 
             # Saving to disk for cache mechanism
 
@@ -74,7 +79,9 @@ class ProtBertExecutor(Executor):
             )
 
             # # Log success on complete fetch
-            print("[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully")
+            print(
+                "[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully"
+            )
 
             # Saving to disk for cache mechanism
 
@@ -99,7 +106,9 @@ class ProtBertExecutor(Executor):
         )
 
         # Success logging
-        print("[ProtBertExecutor.initialize_executor] SUCCESS: Loaded tokenizer from cache")
+        print(
+            "[ProtBertExecutor.initialize_executor] SUCCESS: Loaded tokenizer from cache"
+        )
 
     # All requests to ProtBertExecutor run encode()
     @requests
@@ -186,11 +195,11 @@ class MyIndexer(Executor):
 
     @requests(on="/search")
     def search(self, docs: "DocumentArray", **kwargs):
-        log(f'Computing metric to {len(self._docs)} proteins.')
+        log(f"Computing metric to {len(self._docs)} proteins.")
 
-        docs.match(self._docs, metric='cosine', limit=top_k)
+        docs.match(self._docs, metric="cosine", limit=top_k)
 
     def save(self):
-        if not os.path.exists('embeddings'):
-            os.mkdir('embeddings')
+        if not os.path.exists("embeddings"):
+            os.mkdir("embeddings")
         self._docs.save(embeddings_path)

@@ -2,9 +2,9 @@
 import sys
 
 sys.path.append("../")
-sys.path.append("./backend/")
+sys.path.append("./backend/src/")
 
-from my_executors import *
+from executors import *
 from jina import Document, DocumentArray
 
 sequences = ["AETCZAO", "TEABZAO"]
@@ -26,3 +26,14 @@ def test_Indexer_indexing_samelength():
 
     # indexing
     indexed_docs = MyIndexer().index(embedded_docs)
+
+def test_search():
+    embedded_docs = encode_sequences(sequences)
+
+    # indexing
+    indexer = MyIndexer()
+    indexer.index(embedded_docs)
+
+    indexer.search(embedded_docs)
+
+    return embedded_docs
