@@ -4,6 +4,7 @@ from jina import DocumentArray, Flow
 from executors import ProtBertExecutor, MyIndexer
 from backend_config import pdb_data_path, embeddings_path, pdb_data_url
 from helpers import cull_duplicates, download_csv, log
+from utils import load_or_download
 
 import os
 
@@ -11,7 +12,7 @@ import os
 def index():
     if not os.path.exists(pdb_data_path):
         log("Downloading data.")
-        download_csv(pdb_data_url, pdb_data_path)
+        load_or_download(pdb_data_url, pdb_data_path)
         log("Culling PDB ID duplicates.")
         cull_duplicates(pdb_data_path)
 

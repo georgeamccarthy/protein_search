@@ -4,20 +4,20 @@ import os.path
 import requests
 
 
-def load_or_download(url, filename):
+def load_or_download(url, filepath):
 
-    # If the filename given does not exist
-    if not os.path.isfile(filename):
+    # If the filepath given does not exist
+    if not os.path.isdir(filepath):
 
         # Print logging messag
-        print(f"{filename} not found, downloading from {url}")
+        print(f"{filepath} not found, downloading from {url}")
 
         # `urlretrieve` prior assumes directory exists, but
         # since `data` can be ignored, we need to make sure the
-        # directories that came with `filename` do exist
+        # directories that came with `filepath` do exist
         res = requests.get(url)
 
-        directories, file_path = generate_path(filename)
+        directories, file_path = generate_path(filepath)
 
         # Create the file with the given path in binary
         # Binary formats make sure no difficulty comes with encoding formats
@@ -28,7 +28,7 @@ def load_or_download(url, filename):
             file_handler.write(res.content)
 
     # Return the handle to the file
-    return open(filename)
+    return open(filepath, mode='r')
 
 
 def generate_path(file_path: str):
