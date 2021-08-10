@@ -23,6 +23,9 @@ class ProtBertExecutor(Executor):
         log("Initialising ProtBertExecutor.")
         super().__init__()
 
+        if ProtBertExecutor.__model is None or ProtBertExecutor.__tokenizer is None:
+            ProtBertExecutor.initialize_executor()
+            
         self.model = ProtBertExecutor.__model
         self.tokenizer = ProtBertExecutor.__tokenizer
 
