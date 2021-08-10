@@ -1,4 +1,0 @@
-jina
-torch
-transformers
-streamlit
