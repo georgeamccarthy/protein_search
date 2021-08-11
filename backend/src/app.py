@@ -20,7 +20,7 @@ def index():
         docs_generator = from_csv(
             fp=data_file, field_resolver={"sequence": "text", "structureId": "id"}
         )
-        proteins = DocumentArray(docs_generator)
+        proteins = DocumentArray(docs_generator).shuffle()
     log(f"Loaded {len(proteins)} proteins from {pdb_data_path}.")
 
     log("Building index.")

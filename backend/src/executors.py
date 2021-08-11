@@ -136,17 +136,17 @@ class ProtBertExecutor(Executor):
         encoded_inputs = self.tokenizer(
             sequences,
             padding=True,
-            max_length=max(sequences, key=len),
+            max_length=512,
             return_tensors="pt",
         )
 
         with torch.no_grad():
             log("Computing embeddings.")
+            log(sequences)
             outputs = self.model(**encoded_inputs)
             log("Getting last hidden state.")
             embeds = outputs.last_hidden_state[:, 0, :].detach().numpy()
             for doc, embed in zip(docs, embeds):
-                log(f"Getting embedding {doc.id}")
                 doc.embedding = embed
 
         return docs
