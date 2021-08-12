@@ -36,8 +36,6 @@ def main():
     else:
         log(f"Skipping index step because embeddings already computed {embeddings_path}.")
        
-    ProtBertExecutor.initialize_executor()
-
     log("Creating flow.")
     flow = (
         Flow(port_expose=8020, protocol="http")

@@ -32,8 +32,14 @@ docker:
 	@ # Creating directory to store the models into
 	@ mkdir -p backend/models
 
-	@ # Creating directroy to store the tokenizers into
+	@ # Creating directory to store the tokenizers into
 	@ mkdir -p backend/tokenizers
+
+	@ # Creating directory to store the data into
+	@ mkdir -p backend/data
+
+	@ # Creating directory to store the embeddings into
+	@ mkdir -p backend/embeddings
 
 	@ # Allow both the Docker container and local directory
 	@ # to access contents
@@ -41,10 +47,12 @@ docker:
 	@ # machine can access the folders
 	@ sudo chmod -R 777 backend/models
 	@ sudo chmod -R 777 backend/tokenizers
+	@ sudo chmod -R 777 backend/data
+	@ sudo chmod -R 777 backend/embeddings
 
 	docker-compose -f docker-compose.yml up --build
 
-# For starting the docker comppose,
+# For starting the docker compose,
 up:
 	docker-compose -f docker-compose.yml up
 

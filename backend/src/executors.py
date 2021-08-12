@@ -15,22 +15,13 @@ from helpers import log
 class ProtBertExecutor(Executor):
     """ProtBERT executor: https://huggingface.co/Rostlab/prot_bert"""
 
-    __model = None
-
-    __tokenizer = None
-
     def __init__(self, **kwargs):
         log("Initialising ProtBertExecutor.")
         super().__init__()
 
-        if ProtBertExecutor.__model is None or ProtBertExecutor.__tokenizer is None:
-            ProtBertExecutor.initialize_executor()
+        self.tokenizer, self.model = self.initialize_executor()
 
-        self.model = ProtBertExecutor.__model
-        self.tokenizer = ProtBertExecutor.__tokenizer
-
-    @staticmethod
-    def initialize_executor():
+    def initialize_executor(self):
 
         # If the model is not already cached ...
         if not os.path.isdir("./models/prot_bert"):
@@ -95,13 +86,13 @@ class ProtBertExecutor(Executor):
             )
 
         # Assign model from cache
-        ProtBertExecutor.__model = BertModel.from_pretrained("./models/prot_bert")
+        model = BertModel.from_pretrained("./models/prot_bert")
 
         # Success logging
         print("[ProtBertExecutor.initialize_executor] SUCCESS: Loaded model from cache")
 
         # Assign tokenizer from cache
-        ProtBertExecutor.__tokenizer = BertTokenizer.from_pretrained(
+        tokenizer = BertTokenizer.from_pretrained(
             "./tokenizers/prot_bert", do_lower_case=False
         )
 
@@ -109,6 +100,8 @@ class ProtBertExecutor(Executor):
         print(
             "[ProtBertExecutor.initialize_executor] SUCCESS: Loaded tokenizer from cache"
         )
+
+        return tokenizer, model
 
     # All requests to ProtBertExecutor run encode()
     @requests
@@ -142,7 +135,6 @@ class ProtBertExecutor(Executor):
 
         with torch.no_grad():
             log("Computing embeddings.")
-            log(sequences)
             outputs = self.model(**encoded_inputs)
             log("Getting last hidden state.")
             embeds = outputs.last_hidden_state[:, 0, :].detach().numpy()

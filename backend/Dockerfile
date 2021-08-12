@@ -7,17 +7,17 @@ WORKDIR /app/
 # pip does not like being run as root, so create a user
 RUN useradd --create-home jina
 
-# Add the models folder locally to container
+# Add needed folders locally to container
 COPY ./models /app/models
-
-# Give jina user permission to the folder
-RUN chown jina models
-
-# Add the tokernizers folder locally to container
 COPY ./tokenizers /app/tokenizers
+COPY ./data /app/data
+COPY ./embeddings /app/embeddings
 
-# Give jina user permission to the folder
+# Give jina user permission to the folders
+RUN chown jina models
 RUN chown jina tokenizers
+RUN chown jina data
+RUN chown jina embeddings
 
 # Switch to user
 USER jina
@@ -33,10 +33,12 @@ COPY ./requirements.txt /app/requirements.txt
 RUN pip3 install -r requirements.txt
 
 # Add the src folder locally to container
-ADD ./src .
+ADD ./src /app/src
+
+RUN python src/init.py
 
 # Expose port
 EXPOSE 8020
 
 # Run the application
-CMD [ "python", "src/app.py" ]
+CMD ["python", "src/app.py" ]
