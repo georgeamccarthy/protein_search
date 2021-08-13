@@ -19,9 +19,11 @@ ENV PATH "${PATH}:/home/jina/.local/bin"
 
 # Add requirement contents
 COPY ./requirements.txt requirements.txt
+COPY ./requirements-pre.txt requirements-pre.txt
 
 # Install dependencies
 RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements-pre.txt
 
 # Expose Port
 EXPOSE 8501
