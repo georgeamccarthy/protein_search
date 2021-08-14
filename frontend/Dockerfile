@@ -17,6 +17,9 @@ USER jina
 ENV PYTHONPATH "${PYTHONPATH}:/home/jina/.local/bin"
 ENV PATH "${PATH}:/home/jina/.local/bin"
 
+# Is the application currently running in Docker?
+ENV DOCKER "True"
+
 # Add requirement contents
 COPY ./requirements.txt requirements.txt
 COPY ./requirements-pre.txt requirements-pre.txt

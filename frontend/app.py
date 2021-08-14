@@ -1,3 +1,4 @@
+import os
 import requests
 import streamlit as st
 import streamlit.components.v1 as components
@@ -122,8 +123,15 @@ def protein_3d(pdb_id="1YCR", width=200, height=200):
         width=width,
     )
 
+# The endpoint for sending requests to the Jina backend
+endpoint: str = ''
 
-endpoint = "http://backend:8020/search"
+if "DOCKER" in os.environ:
+    # If the application is being run with Docker
+    endpoint = "http://backend:8020/search"
+else:
+    # Else, if it is being run locally 
+    endpoint = "http://0.0.0.0:8020/search"
 
 st.title("protein_search")
 

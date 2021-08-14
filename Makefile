@@ -6,9 +6,14 @@ coverage:  ## Run tests with coverage
 	coverage run -m pytest -ra
 	coverage report -m
 
-deps:  ## Install dependencies
-	pip install --upgrade pip
-	pip install -r requirements.txt
+back:  ## Install backend dependencies in a virtualenv - start server
+	(cd backend; python3 -m venv venv; . venv/bin/activate; \
+		pip install -r requirements.txt; python3 src/app.py &)
+
+front: ## Install frontend dependencies in a virtualenv - start server
+	(cd frontend; python3 -m venv venv; . venv/bin/activate; \
+		pip install -r requirements.txt; pip install -r requirements-pre.txt; \
+		streamlit run app.py &)
 
 testdeps:
 	pip install black coverage flake8 pytest
