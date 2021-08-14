@@ -128,7 +128,7 @@ class ProtBertExecutor(Executor):
         encoded_inputs = self.tokenizer(
             sequences,
             padding=True,
-            max_length=max(sequences, key=len),
+            max_length=512,
             return_tensors="pt",
         )
 
@@ -138,7 +138,6 @@ class ProtBertExecutor(Executor):
             log("Getting last hidden state.")
             embeds = outputs.last_hidden_state[:, 0, :].detach().numpy()
             for doc, embed in zip(docs, embeds):
-                log(f"Getting embedding {doc.id}")
                 doc.embedding = embed
 
         return docs
@@ -187,11 +186,11 @@ class MyIndexer(Executor):
 
     @requests(on="/search")
     def search(self, docs: "DocumentArray", **kwargs):
-        log(f'Computing metric to {len(self._docs)} proteins.')
+        log(f"Computing metric to {len(self._docs)} proteins.")
 
-        docs.match(self._docs, metric='cosine', limit=top_k)
+        docs.match(self._docs, metric="cosine", limit=top_k)
 
     def save(self):
-        if not os.path.exists('embeddings'):
-            os.mkdir('embeddings')
+        if not os.path.exists("embeddings"):
+            os.mkdir("embeddings")
         self._docs.save(embeddings_path)

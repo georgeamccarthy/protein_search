@@ -43,6 +43,7 @@ def parse_polymer(polymer: Dict):
 def parse_rcsb_response(response: Dict):
     return [parse_rcsb_entry(e) for e in response["entries"]]
 
+
 def parse_rcsb_entry(entry: Dict):
     citation = entry["rcsb_primary_citation"]
     polymers = entry["polymer_entities"]
@@ -61,35 +62,35 @@ def rcsb_metadata(ids: List[str], endpoint="https://data.rcsb.org/graphql"):
     transport = AIOHTTPTransport(url=endpoint)
 
     # Create a GraphQL client using the defined transport
-    client = Client(transport=transport) #, fetch_schema_from_transport=True)
+    client = Client(transport=transport)
 
     # Provide a GraphQL query
     query = gql(
         """
-    query rcsb_metadata ($ids: [String!]!)
-    { 
-      entries(entry_ids: $ids) {
-        struct {
-          title
-          pdbx_descriptor
-        }
-        rcsb_accession_info {
-          initial_release_date
-        }
-        rcsb_primary_citation {
-          pdbx_database_id_DOI
-          title
-          rcsb_authors
-        }
-        polymer_entities {
-          rcsb_entity_source_organism {
-            ncbi_parent_scientific_name
-            ncbi_scientific_name
-          }
-        }
-      }
-    }
-    """
+            query rcsb_metadata ($ids: [String!]!)
+            { 
+              entries(entry_ids: $ids) {
+                struct {
+                  title
+                  pdbx_descriptor
+                }
+                rcsb_accession_info {
+                  initial_release_date
+                }
+                rcsb_primary_citation {
+                  pdbx_database_id_DOI
+                  title
+                  rcsb_authors
+                }
+                polymer_entities {
+                  rcsb_entity_source_organism {
+                    ncbi_parent_scientific_name
+                    ncbi_scientific_name
+                  }
+                }
+              }
+            }
+            """
     )
 
     # Execute the query on the transport
@@ -97,28 +98,30 @@ def rcsb_metadata(ids: List[str], endpoint="https://data.rcsb.org/graphql"):
 
     return result
 
+
 def pdb_metadata(ids: List[str]):
     response = rcsb_metadata(ids)
 
     return parse_rcsb_response(response)
 
+
 def protein_3d(pdb_id="1YCR", width=200, height=200):
     components.html(
         f"""
-      <script src="https://3Dmol.org/build/3Dmol-min.js" async></script>
-      <div
-        style='height: {height}px; width: {width}px; position: relative;'
-        class='viewer_3Dmoljs'
-        data-pdb='{pdb_id}'
-        data-spin='axis:y;speed:1'
-        data-backgroundcolor='0xffffff'
-        data-select1='chain:A'
-        data-style1='cartoon:color=spectrum'
-        data-surface1='opacity:.7;color:white'
-        data-select2='chain:B'
-        data-style2='stick'>
-      </div>
-    """,
+          <script src="https://3Dmol.org/build/3Dmol-min.js" async></script>
+          <div
+            style='height: {height}px; width: {width}px; position: relative;'
+            class='viewer_3Dmoljs'
+            data-pdb='{pdb_id}'
+            data-spin='axis:y;speed:1'
+            data-backgroundcolor='0xffffff'
+            data-select1='chain:A'
+            data-style1='cartoon:color=spectrum'
+            data-surface1='opacity:.7;color:white'
+            data-select2='chain:B'
+            data-style2='stick'>
+          </div>
+        """,
         height=height,
         width=width,
     )
@@ -157,17 +160,19 @@ if st.button(label="Search") or query:
                 st.subheader(meta["description"])
                 st.markdown(
                     f"""
-                *Release date*: {meta["release_date"]}\n
-                """)
+                      *Release date*: {meta["release_date"]}\n
+                    """
+                )
 
                 organisms = ", ".join(filter(None, meta["organisms"]))
                 if organisms:
                     st.markdown(f"*Organisms:* {organisms}\n")
 
-                st.markdown(f"""
-                  Similarity metric: {score:.3f}\n
-                  [Explore properties](https://www.rcsb.org/structure/{id})
-                """,
+                st.markdown(
+                    f"""
+                        Similarity metric: {score:.3f}\n
+                        [Explore properties](https://www.rcsb.org/structure/{id})
+                    """,
                 )
     else:
         st.markdown("Please enter a query")

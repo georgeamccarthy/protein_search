@@ -22,7 +22,7 @@ def index():
             fp=data_file, field_resolver={
                 "sequence": "text", "structureId": "id"}
         )
-        proteins = DocumentArray(docs_generator)
+        proteins = DocumentArray(docs_generator).shuffle()
     log(f"Loaded {len(proteins)} proteins from {pdb_data_path}.")
 
     log("Building index.")
@@ -37,9 +37,8 @@ def main():
     if not os.path.exists(embeddings_path):
         index()
     else:
-        log(
-            f"Skipping index step because embeddings already computed {embeddings_path}.")
-
+        log(f"Skipping index step because embeddings already computed {embeddings_path}.")
+       
     log("Creating flow.")
     flow = (
         Flow(port_expose=8020, protocol="http")
