@@ -1,7 +1,7 @@
 from jina.types.document.generators import from_csv
 from jina import DocumentArray, Flow
 
-from my_executors import ProtBertExecutor, MyIndexer
+from executors import ProtBertExecutor, MyIndexer
 from backend_config import pdb_data_path, embeddings_path, pdb_data_url
 from helpers import cull_duplicates, download_csv, log
 
@@ -20,7 +20,7 @@ def index():
         docs_generator = from_csv(
             fp=data_file, field_resolver={"sequence": "text", "structureId": "id"}
         )
-        proteins = DocumentArray(docs_generator)
+        proteins = DocumentArray(docs_generator).shuffle()
     log(f"Loaded {len(proteins)} proteins from {pdb_data_path}.")
 
     log("Building index.")
@@ -38,7 +38,7 @@ def main():
        
     log("Creating flow.")
     flow = (
-        Flow(port_expose=12345, protocol="http")
+        Flow(port_expose=8020, protocol="http")
         .add(uses=ProtBertExecutor)
         .add(uses=MyIndexer)
     )

@@ -2,7 +2,7 @@
 backend_model = "Rostlab/prot_bert"
 
 # dataset link
-pdb_data_url = "http://www.lri.fr/owncloud/index.php/s/fxIqHWvg1Zsq0JW/download"
+pdb_data_url = "https://www.lri.fr/owncloud/index.php/s/eq7aCSJP3Ci0Vyq/download"
 
 # Number of search results to show.
 top_k = 10

@@ -131,6 +131,9 @@ dmypy.json
 # Mac OS
 .DS_Store
 
-data/*
-embeddings/*
-results/*
+# Custom - backend
+backend/embeddings/
+backend/data/
+backend/models/
+backend/tokenizers/
+backend/results
