@@ -15,22 +15,32 @@ from helpers import log
 class ProtBertExecutor(Executor):
     """ProtBERT executor: https://huggingface.co/Rostlab/prot_bert"""
 
-    __model = None
-
-    __tokenizer = None
-
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         log("Initialising ProtBertExecutor.")
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
-        if ProtBertExecutor.__model is None or ProtBertExecutor.__tokenizer is None:
-            ProtBertExecutor.initialize_executor()
-            
-        self.model = ProtBertExecutor.__model
-        self.tokenizer = ProtBertExecutor.__tokenizer
+        if not os.path.isdir("./models/prot_bert") or not os.path.isdir("./tokenizers/prot_bert"):
+            ProtBertExecutor.download_model()
+
+        self.load_model()
+
+    def load_model(self):
+        # Assign model from cache
+        self.model = BertModel.from_pretrained("./models/prot_bert")
+
+        # Success logging
+        log("[ProtBertExecutor.load_model] SUCCESS: Loaded model from cache")
+
+        # Assign tokenizer from cache
+        self.tokenizer = BertTokenizer.from_pretrained(
+            "./tokenizers/prot_bert", do_lower_case=False
+        )
+
+        # Success logging
+        log("[ProtBertExecutor.load_model] SUCCESS: Loaded tokenizer from cache")
 
     @staticmethod
-    def initialize_executor():
+    def download_model():
 
         # If the model is not already cached ...
         if not os.path.isdir("./models/prot_bert"):
@@ -39,7 +49,7 @@ class ProtBertExecutor(Executor):
 
             # # Log cache, file size info to user
             print(
-                "[ProtBertExecutor.initialize_executor] WARNING: Model cache not found - fetching "
+                "[ProtBertExecutor.download_model] WARNING: Model cache not found - fetching "
                 "from https://huggingface.co/Rostlab/prot_bert (~1.68 GBs)"
             )
 
@@ -47,7 +57,8 @@ class ProtBertExecutor(Executor):
             model = BertModel.from_pretrained("Rostlab/prot_bert")
 
             # # Log success on complete fetch
-            print("[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully")
+            print(
+                "[ProtBertExecutor.download_model] SUCCESS: Model fetched successfully")
 
             # Saving to disk for cache mechanism
 
@@ -56,7 +67,7 @@ class ProtBertExecutor(Executor):
 
             # # Log success on successful save
             print(
-                "[ProtBertExecutor.initialize_executor] SUCCESS: Model saved "
+                "[ProtBertExecutor.download_model] SUCCESS: Model saved "
                 "successfully to local"
             )
 
@@ -67,7 +78,7 @@ class ProtBertExecutor(Executor):
 
             # # Log cache, file size info to user
             print(
-                "[ProtBertExecutor.initialize_executor] WARNING: Tokenizer cache not found "
+                "[ProtBertExecutor.download_model] WARNING: Tokenizer cache not found "
                 "- fetching from https://huggingface.co/Rostlab/prot_bert (~1 MBs)"
             )
 
@@ -77,7 +88,8 @@ class ProtBertExecutor(Executor):
             )
 
             # # Log success on complete fetch
-            print("[ProtBertExecutor.initialize_executor] SUCCESS: Model fetched successfully")
+            print(
+                "[ProtBertExecutor.download_model] SUCCESS: Model fetched successfully")
 
             # Saving to disk for cache mechanism
 
@@ -86,23 +98,9 @@ class ProtBertExecutor(Executor):
 
             # # Log success on successful save
             print(
-                "[ProtBertExecutor.initialize_executor] SUCCESS: Tokenizer saved "
+                "[ProtBertExecutor.download_model] SUCCESS: Tokenizer saved "
                 "successfully to local"
             )
-
-        # Assign model from cache
-        ProtBertExecutor.__model = BertModel.from_pretrained("./models/prot_bert")
-
-        # Success logging
-        print("[ProtBertExecutor.initialize_executor] SUCCESS: Loaded model from cache")
-
-        # Assign tokenizer from cache
-        ProtBertExecutor.__tokenizer = BertTokenizer.from_pretrained(
-            "./tokenizers/prot_bert", do_lower_case=False
-        )
-
-        # Success logging
-        print("[ProtBertExecutor.initialize_executor] SUCCESS: Loaded tokenizer from cache")
 
     # All requests to ProtBertExecutor run encode()
     @requests

@@ -19,13 +19,15 @@ def index():
     log("Converting protein data to DocumentArray")
     with open(pdb_data_path) as data_file:
         docs_generator = from_csv(
-            fp=data_file, field_resolver={"sequence": "text", "structureId": "id"}
+            fp=data_file, field_resolver={
+                "sequence": "text", "structureId": "id"}
         )
         proteins = DocumentArray(docs_generator)
     log(f"Loaded {len(proteins)} proteins from {pdb_data_path}.")
 
     log("Building index.")
-    indexer = Flow(protocol="grpc").add(uses=ProtBertExecutor).add(uses=MyIndexer)
+    indexer = Flow(protocol="grpc").add(
+        uses=ProtBertExecutor).add(uses=MyIndexer)
     with indexer:
         indexer.index(proteins, request_size=10)
 
@@ -35,9 +37,8 @@ def main():
     if not os.path.exists(embeddings_path):
         index()
     else:
-        log(f"Skipping index step because embeddings already computed {embeddings_path}.")
-       
-    ProtBertExecutor.initialize_executor()
+        log(
+            f"Skipping index step because embeddings already computed {embeddings_path}.")
 
     log("Creating flow.")
     flow = (

@@ -4,7 +4,7 @@ import sys
 sys.path.append("../")
 sys.path.append("./backend/")
 
-from my_executors import *
+from executors import *
 from jina import Document, DocumentArray
 
 sequences = ["AETCZAO", "TEABZAO"]
