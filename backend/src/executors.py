@@ -111,6 +111,7 @@ class ProtBertExecutor(Executor):
         log("Indexing.")
 
         log("Batchifying.")
+        print(f"Total {len(docs)} Documents")
         batches = self.batchify(docs, batch_size)
 
         for batch_num, docs_batch in enumerate(batches):
