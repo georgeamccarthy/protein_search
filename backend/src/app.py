@@ -18,7 +18,7 @@ def index():
     log("Converting protein data to DocumentArray")
     with open(pdb_data_path) as data_file:
         docs_generator = from_csv(
-            fp=data_file, field_resolver={"sequence": "text", "structureId": "id"}
+            file=data_file, field_resolver={"sequence": "text", "structureId": "id"}
         )
         proteins = DocumentArray(docs_generator).shuffle()
     log(f"Loaded {len(proteins)} proteins from {pdb_data_path}.")
